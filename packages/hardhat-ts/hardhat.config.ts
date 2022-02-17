@@ -10,6 +10,7 @@ import '@nomiclabs/hardhat-waffle';
 import '@nomiclabs/hardhat-ethers';
 import '@tenderly/hardhat-tenderly';
 import 'hardhat-deploy';
+import 'dotenv/config';
 // not required as we are using @nomiclabs/hardhat-ethers@npm:hardhat-deploy-ethers
 
 // import 'solidity-coverage';
@@ -74,7 +75,7 @@ const config: HardhatUserConfig = {
       // },
     },
     rinkeby: {
-      url: 'https://rinkeby.infura.io/v3/460f40a260564ac4a4f4b3fffb032dad', // <---- YOUR INFURA ID! (or it won't work)
+      url: process.env.RINKEBY_INFURA_KEY, // <---- YOUR INFURA ID! (or it won't work)
       accounts: {
         mnemonic: getMnemonic(),
       },
