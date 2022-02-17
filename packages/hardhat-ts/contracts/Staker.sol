@@ -5,20 +5,21 @@ import 'hardhat/console.sol';
 import './ExampleExternalContract.sol';
 
 contract Staker {
-  ExampleExternalContract public exampleExternalContract;
+  ExampleExternalContract private exampleExternalContract;
   mapping(address => uint256) private balances;
   mapping(address => bool) private stakers;
   uint256 constant threshold = 1 ether;
-  bool locked = true;
-  bool thresholdMet = false;
-  uint256 public deadline;
-  uint256 totalStaked;
-  address owner;
+  bool private locked = true;
+  bool private thresholdMet = false;
+  uint256 private deadline;
+  uint256 private totalStaked;
+  address private owner;
 
   constructor(address exampleExternalContractAddress) {
-    exampleExternalContract = ExampleExternalContract(exampleExternalContractAddress);
+    exampleExternalContract = ExampleExternalContract(payable(exampleExternalContractAddress));
     deadline = block.timestamp + 30 seconds;
     owner = msg.sender;
+    console.log('deployed by address: %s:', msg.sender);
   }
 
   event Stake(address, uint256);
@@ -50,7 +51,7 @@ contract Staker {
     _stakeBalance(msg.sender, msg.value);
     emit Stake(msg.sender, msg.value);
     if (thresholdMet) {
-      emit ThresholdMet(block.timestamp);
+      emit ThresholdMet(totalStaked);
     }
   }
 
@@ -89,6 +90,10 @@ contract Staker {
   function timeLeft() external view returns (uint256 _timeLeft) {
     _timeLeft = deadline - block.timestamp;
     if (block.timestamp > deadline) _timeLeft = 0;
+  }
+
+  function checkBalance() external view returns (uint256 balance) {
+    balance = address(this).balance;
   }
 
   receive() external payable {

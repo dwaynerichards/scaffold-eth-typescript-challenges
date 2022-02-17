@@ -8,4 +8,8 @@ contract ExampleExternalContract {
   function complete() external payable {
     completed = true;
   }
+  receive() external payable {
+      this.complete();
+      
+  } 
 }
