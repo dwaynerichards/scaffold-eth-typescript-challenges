@@ -21,9 +21,9 @@ contract Staker {
     owner = msg.sender;
   }
 
-  event Stake(address _staker, uint256 _amount);
-  event Withdraw(address _staker, uint256 _amount);
-  event ThresholdMet(uint256 _blockTime);
+  event Stake(address, uint256);
+  event Withdraw(address, uint256);
+  event ThresholdMet(uint256);
   modifier canStake() {
     require(this.timeLeft() > 0, 'Stake time expired');
     require(thresholdMet == false, 'Amount capped');
@@ -61,6 +61,8 @@ contract Staker {
     totalStaked += _amount;
     if (totalStaked >= threshold) thresholdMet = true;
     locked = true;
+    console.log('staking %s ether', _amount);
+    console.log('theshold met: %s', thresholdMet);
   }
 
   function execute() external canExecute {
@@ -76,6 +78,7 @@ contract Staker {
     (bool success, ) = address(msg.sender).call{value: refund}('');
     emit Withdraw(msg.sender, refund);
     require(success, 'Unsuccessful withrawl');
+    console.log('withdraw invoked');
   }
 
   function changeDeadline(uint256 _extension) external {
