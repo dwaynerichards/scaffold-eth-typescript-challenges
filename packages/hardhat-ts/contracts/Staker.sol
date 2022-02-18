@@ -5,15 +5,15 @@ import 'hardhat/console.sol';
 import './ExampleExternalContract.sol';
 
 contract Staker {
-  ExampleExternalContract private exampleExternalContract;
-  mapping(address => uint256) private balances;
-  mapping(address => bool) private stakers;
+  ExampleExternalContract public exampleExternalContract;
+  mapping(address => uint256) public balances;
+  mapping(address => bool) public stakers;
   uint256 constant threshold = 1 ether;
-  bool private locked = true;
-  bool private thresholdMet = false;
-  uint256 private deadline;
-  uint256 private totalStaked;
-  address private owner;
+  bool public locked = true;
+  bool public thresholdMet = false;
+  uint256 public deadline;
+  uint256 public totalStaked;
+  address public owner;
 
   constructor(address exampleExternalContractAddress) {
     exampleExternalContract = ExampleExternalContract(payable(exampleExternalContractAddress));
@@ -63,6 +63,7 @@ contract Staker {
     if (totalStaked >= threshold) thresholdMet = true;
     locked = true;
     console.log('staking %s ether', _amount);
+    console.log('total staked &s', totalStaked);
     console.log('theshold met: %s', thresholdMet);
   }
 
