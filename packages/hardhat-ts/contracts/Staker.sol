@@ -14,6 +14,10 @@ contract Staker {
   uint256 public deadline;
   uint256 public totalStaked;
   address public owner;
+  bool public deadlineMet;
+
+  //set deadline bool;
+  //use requirement to chekc bool only
 
   constructor(address exampleExternalContractAddress) {
     exampleExternalContract = ExampleExternalContract(payable(exampleExternalContractAddress));
@@ -35,7 +39,7 @@ contract Staker {
     require(stakers[msg.sender], 'Not a staker');
     require(locked == true, 'Contract locked');
     require(thresholdMet == true, 'Not enough eth staked');
-    require(this.timeLeft() == 0, 'Not enough time has passed');
+    require(deadlineMet, 'Not enough time has passed');
     require(exampleExternalContract.completed() == false, 'Execution already invoked');
     _;
   }
@@ -63,7 +67,7 @@ contract Staker {
     if (totalStaked >= threshold) thresholdMet = true;
     locked = true;
     console.log('staking %s ether', _amount);
-    console.log('total staked &s', totalStaked);
+    console.log('total staked %s', totalStaked);
     console.log('theshold met: %s', thresholdMet);
   }
 
@@ -83,14 +87,16 @@ contract Staker {
     console.log('withdraw invoked');
   }
 
-  function changeDeadline(uint256 _extension) external {
-    require(owner == msg.sender, 'Access not granted');
-    deadline += _extension;
+  function lowerDeadline() external {
+    deadlineMet = true;
   }
 
-  function timeLeft() external view returns (uint256 _timeLeft) {
+  function timeLeft() external returns (uint256 _timeLeft) {
     _timeLeft = deadline - block.timestamp;
-    if (block.timestamp > deadline) _timeLeft = 0;
+    if (block.timestamp > deadline) {
+      _timeLeft = 0;
+      deadlineMet = true;
+    }
   }
 
   function checkBalance() external view returns (uint256 balance) {

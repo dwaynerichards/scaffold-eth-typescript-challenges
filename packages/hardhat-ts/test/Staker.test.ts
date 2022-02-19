@@ -56,21 +56,48 @@ describe('Staker Contract', async () => {
       const signer = signers[0];
       const { Staker, address } = signer;
       await expect(signer.Staker.stake(testObj)).to.emit(Staker, 'ThresholdMet').withArgs(oneEther);
-      // await expect(signer.Staker.totalStaked()).to.equal(oneEther);
+      expect(await signer.Staker.thresholdMet()).to.equal(true);
     });
     it('should reach threshhold', async () => {
       const { signers } = await setup();
-      //signers.forEach((account, index) => console.log(index, account.address));
       let threshhold = 0;
       for (const signer of signers) {
-        if (threshhold < 0.8) {
+        if (threshhold < 0.9) {
           await signer.Staker.stake(testObj).then(async (tx: any) => await tx.wait());
           threshhold += 0.1;
         }
       }
       const signer = signers[0];
       const { Staker } = signer;
-      await expect(signer.Staker.stake(testObj)).to.emit(Staker, 'ThresholdMet').withArgs(oneEther);
+      await expect(signer.Staker.stake(testObj)).to.be.revertedWith('Amount capped');
+    });
+    it('should revert with "Not enough eth staked"', async () => {
+      const { signers } = await setup();
+      for (let i = 0; i < 9; i++) {
+        await signers[i].Staker.stake(testObj);
+      }
+      const signer = signers[0];
+      await expect(signer.Staker.execute()).to.be.revertedWith('Not enough eth staked');
+    });
+
+    it('should revert with "Not a staker" if incorrect address attempts execution', async () => {
+      const { signers } = await setup();
+      for (let i = 0; i < 10; i++) {
+        await signers[i].Staker.stake(testObj);
+      }
+      const badSigner = signers[10];
+      await expect(badSigner.Staker.execute()).to.be.revertedWith('Not a staker');
+    });
+
+    it('should revert with "Execution already invoked"', async () => {
+      const { signers } = await setup();
+      for (let i = 0; i < 10; i++) {
+        await signers[i].Staker.stake(testObj);
+      }
+      const signer = signers[0];
+      await signer.Staker.lowerDeadline();
+      await signer.Staker.execute();
+      await expect(signer.Staker.execute()).to.be.revertedWith('Execution already invoked');
     });
   } catch (err) {
     console.log(err);
