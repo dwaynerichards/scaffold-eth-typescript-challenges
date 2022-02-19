@@ -16,9 +16,6 @@ contract Staker {
   address public owner;
   bool public deadlineMet;
 
-  //set deadline bool;
-  //use requirement to chekc bool only
-
   constructor(address exampleExternalContractAddress) {
     exampleExternalContract = ExampleExternalContract(payable(exampleExternalContractAddress));
     deadline = block.timestamp + 30 seconds;
@@ -32,6 +29,7 @@ contract Staker {
   modifier canStake() {
     require(this.timeLeft() > 0, 'Stake time expired');
     require(thresholdMet == false, 'Amount capped');
+    require(deadlineMet == false, 'Deadline not met');
     require(locked == true, 'currently locked');
     _;
   }
@@ -44,7 +42,7 @@ contract Staker {
     _;
   }
   modifier canWithdraw() {
-    require(this.timeLeft() == 0, 'There is still time to stake');
+    require(deadlineMet, 'There is still time to stake');
     require(thresholdMet == false, 'Threshold was met');
     require(stakers[msg.sender], 'Not a stalker');
     require(balances[msg.sender] > 0, 'No balance to withdraw');
@@ -93,7 +91,7 @@ contract Staker {
 
   function timeLeft() external returns (uint256 _timeLeft) {
     _timeLeft = deadline - block.timestamp;
-    if (block.timestamp > deadline) {
+    if (block.timestamp >= deadline) {
       _timeLeft = 0;
       deadlineMet = true;
     }

@@ -8,8 +8,12 @@ contract ExampleExternalContract {
   function complete() external payable {
     completed = true;
   }
+
+  function getBalance() external view returns (uint256 _balance) {
+    _balance = address(this).balance;
+  }
+
   receive() external payable {
-      this.complete();
-      
-  } 
+    this.complete();
+  }
 }
