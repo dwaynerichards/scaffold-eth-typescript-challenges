@@ -55,7 +55,10 @@ describe('Staker Contract', async () => {
       const signer = signers[0];
       const { Staker, address } = signer;
       await expect(signer.Staker.stake(testObj)).to.emit(Staker, 'ThresholdMet').withArgs(oneEther);
-      expect(await signer.Staker.thresholdMet()).to.equal(true);
+      const threshholdMet = await signer.Staker.thresholdMet();
+      const totalStaked = await signer.Staker.totalStaked();
+      expect(threshholdMet).to.equal(true);
+      expect(formatEther(totalStaked)).to.equal(formatEther(oneEther));
     });
     it('should cap amount to withdraw and revert transaction if threshhold met', async () => {
       const { signers } = await setup();
