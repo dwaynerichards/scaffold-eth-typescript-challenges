@@ -8,7 +8,7 @@ contract Staker {
   ExampleExternalContract public exampleExternalContract;
   mapping(address => uint256) public balances;
   mapping(address => bool) public stakers;
-  uint256 constant threshold = 1 ether;
+  uint256 public constant threshold = 1 ether;
   bool public locked = true;
   bool public thresholdMet = false;
   uint256 public deadline;

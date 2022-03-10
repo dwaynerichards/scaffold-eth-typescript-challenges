@@ -98,8 +98,18 @@ export const Main: FC = () => {
   return (
     <div className="App">
       <MainPageHeader scaffoldAppProviders={scaffoldAppProviders} price={ethPrice} />
+      <StakerUI mainnetProvider={scaffoldAppProviders.mainnetProvider} />
 
-      {/* Routes should be added between the <Switch> </Switch> as seen below */}
+      <MainPageFooter scaffoldAppProviders={scaffoldAppProviders} price={ethPrice} />
+    </div>
+  );
+};
+
+/**
+ * 
+    <div className="App">
+      <MainPageHeader scaffoldAppProviders={scaffoldAppProviders} price={ethPrice} />
+
       <BrowserRouter>
         <MainPageMenu route={route} setRoute={setRoute} />
         <Switch>
@@ -113,7 +123,6 @@ export const Main: FC = () => {
               appContractConfig={appContractConfig}
             />
           </Route>
-          {/* you can add routes here like the below examlples */}
           <Route path="/hints">
             <Hints
               address={ethersContext?.account ?? ''}
@@ -145,7 +154,5 @@ export const Main: FC = () => {
 
       <MainPageFooter scaffoldAppProviders={scaffoldAppProviders} price={ethPrice} />
     </div>
-  );
-};
-
+ */
 export default Main;
